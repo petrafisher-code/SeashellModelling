@@ -50,15 +50,13 @@ def main(D, A, alpha, beta, mu, omega, phi, a, b, L, P, W1, W2, N):
     N : int
         Number of nodules per complete revolution.
     """
-    theta_array = np.linspace(0, 2*np.pi, 100)
-    s_array = np.linspace(0, 2*np.pi, 100)
+    theta_array = np.linspace(-4 * np.pi, 4 * np.pi, 100) # Theta range (Picado, 2009)
+    s_array = np.linspace(np.radians(-270), np.radians(90), 20) # s range (Picado, 2009)
 
-    nodule_array = np.zeros((N, len(theta_array)))
+    nodule_array = np.zeros(len(theta_array))
     if L != 0 and N != 0 and W1 != 0 and W2 != 0:
-        for n in range(N):
-            for t_index, t in enumerate(theta_array):
-                nodule_array[n][t_index] = (2*np.pi/(n+1))*((n+1)*t/(2*np.pi))\
-                                            - int((n+1)*t/(2* np.pi))
+        for t_index, t in enumerate(theta_array):
+            nodule_array[t_index] = (2*np.pi/N)*((N*t)/(2*np.pi)-int(N*t/(2* np.pi)))
 
     x_array = np.zeros((len(s_array), len(theta_array)))
     y_array = np.zeros((len(s_array), len(theta_array)))
@@ -67,20 +65,20 @@ def main(D, A, alpha, beta, mu, omega, phi, a, b, L, P, W1, W2, N):
     for s_index, s in enumerate(s_array):
         for t_index, t in enumerate(theta_array):
             if L != 0 and N != 0 and W1 != 0 and W2 != 0:
-                k = L*np.exp(-((2*(s-P)/W1)**2) - ((2*nodule_array[0][t_index]/W2)**2))
+                k = L*np.exp(-((2*(s-P)/W1)**2) - ((2*nodule_array[t_index]/W2)**2))
             else:
                 k = 0
             h = np.sqrt(1 / ((np.cos(s) / a) ** 2 + (np.sin(s) / b) ** 2)) + k
+            e = np.exp(t/np.tan(alpha))
             x_array[s_index][t_index] = D*(A*np.sin(beta)*np.cos(t)
                                             + h*(np.cos(s+phi)*np.sin(t+omega)
                                                 + np.sin(mu)*np.sin(s+phi)*np.cos(t+omega)
-                                            ))*np.exp(t/np.tan(alpha))
+                                            ))*e
             y_array[s_index][t_index] = (A*np.sin(beta)*np.sin(t)
                                             + h*(np.cos(s+phi)*np.sin(t+omega)
                                                  + np.sin(mu)*np.sin(s+phi)*np.cos(t+omega)
-                                            ))* np.exp(t/np.tan(alpha))
-            z_array[s_index][t_index] = (-A*np.cos(beta) + h*np.cos(mu)*np.sin(s+phi)) \
-                                        * np.exp(t/np.tan(alpha))
+                                            ))*e
+            z_array[s_index][t_index] = (-A*np.cos(beta) + h*np.cos(mu)*np.sin(s+phi))*e
 
     plt.figure()
     ax = plt.axes(projection="3d")
@@ -90,6 +88,11 @@ def main(D, A, alpha, beta, mu, omega, phi, a, b, L, P, W1, W2, N):
 
 
 if __name__ == "__main__":
-    main(D=1, A=100, alpha=95*np.pi/180, beta=25*np.pi/180,
-         mu=0*np.pi/180, omega=0*np.pi/180, phi=360*np.pi/180,
+    # # Hamish's example:
+    main(D=1, A=100, alpha=np.radians(95), beta=np.radians(25),
+         mu=np.radians(0), omega=np.radians(0), phi=np.radians(360),
           a=10, b=20, L=0, P=0, W1=0, W2=0, N=0)
+
+    # main(D=1, A=90, alpha=np.radians(86), beta=np.radians(10),
+    #      mu=np.radians(5), omega=np.radians(1), phi=np.radians(-45),
+    #       a=20, b=20, L=14, P=40, W1=180, W2=0.4, N=180)
