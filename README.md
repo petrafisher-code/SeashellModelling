@@ -31,7 +31,7 @@ pip install numpy matplotlib
 Execute the script using Python:
 
 ```bash
-python seashell_generator.py
+python main.py
 ```
 
 ### Customizing Parameters
