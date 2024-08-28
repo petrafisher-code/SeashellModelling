@@ -50,49 +50,66 @@ def main(D, A, alpha, beta, mu, omega, phi, a, b, L, P, W1, W2, N):
     N : int
         Number of nodules per complete revolution.
     """
-    theta_array = np.linspace(-4 * np.pi, 4 * np.pi, 100) # Theta range (Picado, 2009)
-    s_array = np.linspace(np.radians(-270), np.radians(90), 20) # s range (Picado, 2009)
+    # Define the ranges of s and theta, as seen in (Picado, 2009)
+    theta_array = np.linspace(-4 * np.pi, 4 * np.pi, 100)
+    s_array = np.linspace(np.radians(-270), np.radians(90), 20)
 
+    # Calculate nodue array if appropriate
     nodule_array = np.zeros(len(theta_array))
     if L != 0 and N != 0 and W1 != 0 and W2 != 0:
         for t_index, t in enumerate(theta_array):
-            nodule_array[t_index] = (2*np.pi/N)*((N*t)/(2*np.pi)-int(N*t/(2* np.pi)))
+            nodule_array[t_index] = (2*np.pi/N)*((N*t)/(2*np.pi) - np.floor(N*t/(2*np.pi)))
 
+    # Define x, y, and z arrays
     x_array = np.zeros((len(s_array), len(theta_array)))
     y_array = np.zeros((len(s_array), len(theta_array)))
     z_array = np.zeros((len(s_array), len(theta_array)))
 
+    # Iterate through s and theta array values, calculating the array 
+    # values for x, y, and z.
     for s_index, s in enumerate(s_array):
         for t_index, t in enumerate(theta_array):
             if L != 0 and N != 0 and W1 != 0 and W2 != 0:
                 k = L*np.exp(-((2*(s-P)/W1)**2) - ((2*nodule_array[t_index]/W2)**2))
             else:
                 k = 0
-            h = np.sqrt(1 / ((np.cos(s) / a) ** 2 + (np.sin(s) / b) ** 2)) + k
-            e = np.exp(t/np.tan(alpha))
-            x_array[s_index][t_index] = D*(A*np.sin(beta)*np.cos(t)
+            h = 1 / np.sqrt((np.cos(s) / a) ** 2 + (np.sin(s) / b) ** 2) + k
+            e = np.exp(t / np.tan(alpha))
+            x_array[s_index][t_index] = D*(A*np.sin(beta)*np.cos(t+omega)
+                                            + h*(np.cos(s+phi)*np.cos(t+omega)
+                                                - np.sin(mu)*np.sin(s+phi)*np.sin(t+omega)))*e
+            y_array[s_index][t_index] = (A*np.sin(beta)*np.sin(t+omega)
                                             + h*(np.cos(s+phi)*np.sin(t+omega)
-                                                + np.sin(mu)*np.sin(s+phi)*np.cos(t+omega)
-                                            ))*e
-            y_array[s_index][t_index] = (A*np.sin(beta)*np.sin(t)
-                                            + h*(np.cos(s+phi)*np.sin(t+omega)
-                                                 + np.sin(mu)*np.sin(s+phi)*np.cos(t+omega)
-                                            ))*e
+                                                +np.sin(mu)*np.sin(s+phi)*np.cos(t+omega)))*e
             z_array[s_index][t_index] = (-A*np.cos(beta) + h*np.cos(mu)*np.sin(s+phi))*e
 
-    plt.figure()
-    ax = plt.axes(projection="3d")
-    ax.plot_surface(x_array, y_array, z_array, cmap='viridis', edgecolor='none')
-    ax.set_title("Seashell")
-    plt.show()
+    # Create figure (plotting two subplots)
+    fig = plt.figure(figsize=(12, 6))
 
+    # White wireframe with black background
+    ax1 = fig.add_subplot(122, projection='3d')
+    ax1.plot_wireframe(x_array, y_array, z_array, color='black')
+    ax1.view_init(elev=30, azim=-60)
+    ax1.axis('off')
+
+    # Colored surface plot
+    ax2 = fig.add_subplot(121, projection='3d')
+    ax2.plot_surface(x_array, y_array, z_array, rstride=1, cstride=1, color='purple',
+                      edgecolor='none')
+    ax2.view_init(elev=30, azim=-60)
+
+    plt.show()
 
 if __name__ == "__main__":
     # # Hamish's example:
-    main(D=1, A=100, alpha=np.radians(95), beta=np.radians(25),
-         mu=np.radians(0), omega=np.radians(0), phi=np.radians(360),
-          a=10, b=20, L=0, P=0, W1=0, W2=0, N=0)
+    # main(D=1, A=100, alpha=np.radians(95), beta=np.radians(25),
+    #      mu=np.radians(0), omega=np.radians(0), phi=np.radians(180),
+    #       a=10, b=20, L=0, P=0, W1=0, W2=0, N=0)
 
-    # main(D=1, A=90, alpha=np.radians(86), beta=np.radians(10),
-    #      mu=np.radians(5), omega=np.radians(1), phi=np.radians(-45),
-    #       a=20, b=20, L=14, P=40, W1=180, W2=0.4, N=180)
+    # main(D=1, A=25, alpha=np.radians(83), beta=np.radians(42),
+    #      mu=np.radians(10), omega=np.radians(30), phi=np.radians(70),
+    #       a=12, b=20, L=0, P=0, W1=0, W2=0, N=0)
+
+    main(D=1, A=90, alpha=np.radians(86), beta=np.radians(10),
+         mu=np.radians(5), omega=np.radians(1), phi=np.radians(-45),
+          a=20, b=20, L=14, P=40, W1=180, W2=0.4, N=180)
