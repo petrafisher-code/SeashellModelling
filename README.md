@@ -63,6 +63,12 @@ main(D=1, A=100, alpha=95*np.pi/180, beta=25*np.pi/180,
 - `N` : Number of nodules per complete revolution.
 - `image` : Name of the (JPG) image to use to colour the surface. 
 
+# Example Shell Figure
+
+Here is an example of a shell figure generated using the code in this repository:
+
+![Example Shell Figure](example_shell_figure.jpg)
+
 ## References
 
 This code is based on the mathematical model described in:
