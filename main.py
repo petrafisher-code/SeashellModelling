@@ -124,5 +124,4 @@ if __name__ == "__main__":
     # SHELL
     main(D=1, A=80, alpha=np.radians(86), beta=np.radians(10),
          mu=np.radians(5), omega=np.radians(0), phi=np.radians(-45),
-          a=20, b=20, L=10, P=40, W1=180, W2=0.4, N=10, image="shell")
-
+          a=20, b=20, L=10, P=np.radians(40), W1=180, W2=0.4, N=10, image="shell")
