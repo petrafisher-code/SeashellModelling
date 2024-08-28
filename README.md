@@ -42,7 +42,7 @@ These parameters can be modified directly in the `main()` function call within t
 ```python
 main(D=1, A=100, alpha=95*np.pi/180, beta=25*np.pi/180,
      mu=0*np.pi/180, omega=0*np.pi/180, phi=360*np.pi/180,
-     a=10, b=20, L=0, P=0, W1=0, W2=0, N=0)
+     a=10, b=20, L=0, P=0, W1=0, W2=0, N=0, image="shell")
 ```
 
 **Parameter Descriptions:**
@@ -61,6 +61,7 @@ main(D=1, A=100, alpha=95*np.pi/180, beta=25*np.pi/180,
 - `W1` : Length of each nodule along the generating curve.
 - `W2` : Length of each nodule along the helico-spiral.
 - `N` : Number of nodules per complete revolution.
+- `image` : Name of the (JPG) image to use to colour the surface. 
 
 ## References
 
